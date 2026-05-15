@@ -9,20 +9,20 @@ const routes = [
     {
         path: '/login',
         name: 'Login',
-        component: () => import('@/views/Login.vue'),
-        meta: { requiresAuth: false },
+        component: () => import('@/views/auth/LoginView.vue'),
+        meta: { requiresAuth: false, noLayout: true },
     },
     {
         path: '/find-id',
         name: 'FindId',
         component: () => import('@/views/auth/FindIdView.vue'),
-        meta: { requiresAuth: false },
+        meta: { requiresAuth: false, noLayout: true },
     },
     {
         path: '/find-password',
         name: 'FindPassword',
         component: () => import('@/views/auth/FindPasswordView.vue'),
-        meta: { requiresAuth: false },
+        meta: { requiresAuth: false, noLayout: true },
     },
     {
         path: '/dashboard',
