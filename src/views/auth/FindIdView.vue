@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useAuthStore } from '../../stores/authStore'
+import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
 
@@ -66,36 +66,31 @@ const handleVerifyCode = async () => {
 </script>
 
 <template>
-    <main class="flex min-h-screen items-center justify-center bg-slate-950 px-6">
-        <section class="w-full max-w-md rounded-2xl border border-slate-800 bg-white p-8 shadow-2xl">
-            <div class="mb-8">
-                <p class="mb-2 text-sm font-semibold text-blue-700">
-                    DB HiTek Smart Factory
-                </p>
-                <h1 class="text-2xl font-bold text-slate-900">
-                    아이디 찾기
-                </h1>
-                <p class="mt-2 text-sm text-slate-500">
-                    가입된 이메일로 인증 코드를 확인합니다.
-                </p>
+    <div class="min-h-screen bg-[#0F1F0F] flex items-center justify-center">
+        <div class="bg-[#1A2E1A] rounded-2xl p-14 w-full max-w-lg">
+            <!-- 로고 -->
+            <div class="flex items-center gap-3 mb-10">
+                <i class="fa-solid fa-microchip text-[#15803D] text-3xl"></i>
+                <span class="text-3xl font-extrabold tracking-tight">
+                    <span class="text-[#F97316]">Hi</span><span class="text-[#60A5FA]">CADA</span>
+                    <span class="text-white font-medium text-2xl ml-1">아이디 찾기</span>
+                </span>
             </div>
 
             <div class="space-y-5">
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        이메일
-                    </label>
+                    <label class="block text-sm text-white/50 mb-2">이메일</label>
                     <div class="flex gap-2">
                         <input
                             v-model="email"
                             type="email"
-                            class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                             placeholder="이메일을 입력하세요"
+                            class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-base outline-none focus:border-[#15803D] transition-colors"
                         />
                         <button
                             type="button"
-                            class="whitespace-nowrap rounded-lg bg-blue-700 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-60"
                             :disabled="isLoading"
+                            class="whitespace-nowrap bg-[#15803D] hover:bg-[#166534] disabled:opacity-50 text-white font-medium px-4 py-3 rounded-lg text-base transition-colors"
                             @click="handleSendCode"
                         >
                             발송
@@ -104,23 +99,21 @@ const handleVerifyCode = async () => {
                 </div>
 
                 <div v-if="isCodeSent">
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        인증 코드
-                    </label>
+                    <label class="block text-sm text-white/50 mb-2">인증 코드</label>
                     <input
                         v-model="code"
                         type="text"
                         maxlength="6"
-                        class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                         placeholder="6자리 인증 코드를 입력하세요"
+                        class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-base outline-none focus:border-[#15803D] transition-colors"
                     />
                 </div>
 
                 <button
                     v-if="isCodeSent"
                     type="button"
-                    class="w-full rounded-lg bg-orange-500 py-3 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:opacity-60"
                     :disabled="isLoading"
+                    class="w-full bg-[#15803D] hover:bg-[#166534] disabled:opacity-50 text-white font-medium py-3 rounded-lg text-base transition-colors"
                     @click="handleVerifyCode"
                 >
                     아이디 확인
@@ -128,31 +121,24 @@ const handleVerifyCode = async () => {
 
                 <div
                     v-if="foundUserId"
-                    class="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800"
+                    class="rounded-lg border border-white/10 bg-white/5 p-4 text-base text-white/80"
                 >
-                    가입된 아이디는
-                    <strong>{{ foundUserId }}</strong>
-                    입니다.
+                    가입된 아이디는 <strong class="text-white">{{ foundUserId }}</strong> 입니다.
                 </div>
 
-                <p v-if="successMessage" class="text-sm font-medium text-blue-700">
-                    {{ successMessage }}
-                </p>
+                <p v-if="successMessage" class="text-[#60A5FA] text-sm pt-1">{{ successMessage }}</p>
+                <p v-if="errorMessage" class="text-red-400 text-sm pt-1">{{ errorMessage }}</p>
 
-                <p v-if="errorMessage" class="text-sm font-medium text-red-600">
-                    {{ errorMessage }}
-                </p>
-
-                <div class="flex justify-center gap-3 text-sm text-slate-500">
-                    <RouterLink to="/login" class="hover:text-blue-700">
+                <div class="flex justify-center gap-3 text-sm text-white/40 pt-1">
+                    <RouterLink to="/login" class="hover:text-white/70 transition-colors">
                         로그인
                     </RouterLink>
                     <span>|</span>
-                    <RouterLink to="/find-password" class="hover:text-blue-700">
+                    <RouterLink to="/find-password" class="hover:text-white/70 transition-colors">
                         비밀번호 찾기
                     </RouterLink>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </div>
 </template>

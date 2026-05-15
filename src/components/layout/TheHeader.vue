@@ -95,8 +95,8 @@ const userLabel = computed(() => {
     return `${user.name} (${ROLE_LABEL[user.role] ?? user.role})`
 })
 
-const handleLogout = () => {
-    auth.logout()
+const handleLogout = async () => {
+    await auth.logout()
     router.push('/login')
 }
 

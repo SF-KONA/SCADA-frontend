@@ -1,6 +1,6 @@
 <template>
-    <!-- 로그인 페이지: 레이아웃 없이 단독 렌더링 -->
-    <router-view v-if="isLoginPage" />
+    <!-- 레이아웃 없이 단독 렌더링 (로그인, 아이디 찾기, 비밀번호 찾기 등) -->
+    <router-view v-if="noLayout" />
 
     <!-- 일반 페이지: 헤더 + 사이드바 + 콘텐츠 -->
     <div v-else class="h-screen flex flex-col bg-[#F0F2F0] overflow-hidden">
@@ -21,5 +21,5 @@ import TheHeader from '@/components/layout/TheHeader.vue'
 import TheSidebar from '@/components/layout/TheSidebar.vue'
 
 const route = useRoute()
-const isLoginPage = computed(() => route.name === 'Login')
+const noLayout = computed(() => route.meta.noLayout === true)
 </script>
