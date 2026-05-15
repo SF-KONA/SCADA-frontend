@@ -13,6 +13,18 @@ const routes = [
         meta: { requiresAuth: false },
     },
     {
+        path: '/find-id',
+        name: 'FindId',
+        component: () => import('@/views/auth/FindIdView.vue'),
+        meta: { requiresAuth: false },
+    },
+    {
+        path: '/find-password',
+        name: 'FindPassword',
+        component: () => import('@/views/auth/FindPasswordView.vue'),
+        meta: { requiresAuth: false },
+    },
+    {
         path: '/dashboard',
         name: 'MainDashboard',
         component: () => import('@/views/MainDashboard.vue'),
@@ -46,6 +58,12 @@ const routes = [
         path: '/users',
         name: 'UserManagement',
         component: () => import('@/views/UserManagement.vue'),
+        meta: { requiresAuth: true, adminOnly: true },
+    },
+    {
+        path: '/users/create',
+        name: 'UserCreate',
+        component: () => import('@/views/users/UserCreateView.vue'),
         meta: { requiresAuth: true, adminOnly: true },
     },
     {
