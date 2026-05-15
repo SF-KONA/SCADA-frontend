@@ -76,6 +76,12 @@ const routes = [
         component: () => import('@/views/alerts/AlertListView.vue'),
         meta: { requiresAuth: true },
     },
+    {
+        path: '/equipment-control',
+        name: 'EquipmentControl',
+        component: () => import('@/views/equipment/EquipmentControlView.vue'),
+        meta: { requiresAuth: true },
+    },
 ]
 
 const router = createRouter({
