@@ -70,6 +70,12 @@ const routes = [
         path: '/:pathMatch(.*)*',
         redirect: '/dashboard',
     },
+    {
+        path: '/alerts',
+        name: 'AlertList',
+        component: () => import('@/views/alerts/AlertListView.vue'),
+        meta: { requiresAuth: true },
+    },
 ]
 
 const router = createRouter({

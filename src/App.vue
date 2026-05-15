@@ -1,3 +1,29 @@
+<script setup>
+import { computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import TheHeader from '@/components/layout/TheHeader.vue'
+import TheSidebar from '@/components/layout/TheSidebar.vue'
+import EmergencyAlarmPopup from '@/components/alarm/EmergencyAlarmPopup.vue'
+import { useAlarmStore } from '@/stores/alarmStore'
+
+const route = useRoute()
+const auth = useAuthStore()
+const alarmStore = useAlarmStore()
+
+const noLayout = computed(() => route.meta.noLayout === true)
+
+watch(
+    () => route.path,
+    () => {
+        if (auth.isLoggedIn && !noLayout.value) {
+            alarmStore.loadInitialMockEmergencyAlarms()
+        }
+    },
+    { immediate: true },
+)
+</script>
+
 <template>
     <!-- 레이아웃 없이 단독 렌더링 (로그인, 아이디 찾기, 비밀번호 찾기 등) -->
     <router-view v-if="noLayout" />
@@ -12,14 +38,7 @@
             </main>
         </div>
     </div>
+
+    <!-- 전역 비상 알람 팝업 -->
+    <EmergencyAlarmPopup />
 </template>
-
-<script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import TheHeader from '@/components/layout/TheHeader.vue'
-import TheSidebar from '@/components/layout/TheSidebar.vue'
-
-const route = useRoute()
-const noLayout = computed(() => route.meta.noLayout === true)
-</script>
