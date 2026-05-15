@@ -1,0 +1,78 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const routes = [
+    {
+        path: '/',
+        redirect: '/dashboard',
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/views/Login.vue'),
+        meta: { requiresAuth: false },
+    },
+    {
+        path: '/dashboard',
+        name: 'MainDashboard',
+        component: () => import('@/views/MainDashboard.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/equipment',
+        name: 'EquipmentStatus',
+        component: () => import('@/views/EquipmentStatus.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/control',
+        name: 'OptimizationControl',
+        component: () => import('@/views/OptimizationControl.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/report',
+        name: 'AiReport',
+        component: () => import('@/views/AiReport.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/alarm',
+        name: 'AlarmCenter',
+        component: () => import('@/views/AlarmCenter.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/users',
+        name: 'UserManagement',
+        component: () => import('@/views/UserManagement.vue'),
+        meta: { requiresAuth: true, adminOnly: true },
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        redirect: '/dashboard',
+    },
+]
+
+const router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes,
+})
+
+router.beforeEach((to) => {
+    const auth = useAuthStore()
+
+    if (to.meta.requiresAuth && !auth.isLoggedIn) {
+        return { name: 'Login' }
+    }
+
+    if (to.meta.adminOnly && auth.user?.role !== 'ADMIN') {
+        return { name: 'MainDashboard' }
+    }
+
+    if (to.name === 'Login' && auth.isLoggedIn) {
+        return { name: 'MainDashboard' }
+    }
+})
+
+export default router
