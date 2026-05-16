@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useAlarmStore } from '../../stores/alarmStore'
+import { useAlarmStore } from '@/stores/alarmStore'
 
 const alarmStore = useAlarmStore()
 
@@ -34,16 +34,25 @@ const normalRangeText = computed(() => {
     return `${min}${unit} ~ ${max}${unit}`
 })
 
-const exceedRate = computed(() => {
-    if (!alarm.value?.triggeredValue || !alarm.value?.normalMax) {
-        return null
-    }
+const deviationRate = computed(() => {
+    if (!alarm.value?.triggeredValue) return null
 
-    if (alarm.value.normalMax === 0) {
-        return null
-    }
+    const value = alarm.value.triggeredValue
+    const max = alarm.value.normalMax
+    const min = alarm.value.normalMin
 
-    return (((alarm.value.triggeredValue - alarm.value.normalMax) / alarm.value.normalMax) * 100).toFixed(1)
+    if (max != null && value > max && max !== 0) {
+        return (((value - max) / max) * 100).toFixed(1)
+    }
+    if (min != null && value < min && min !== 0) {
+        return (((value - min) / min) * 100).toFixed(1)
+    }
+    return null
+})
+
+const isExceeded = computed(() => {
+    if (!alarm.value?.triggeredValue || alarm.value.normalMax == null) return false
+    return alarm.value.triggeredValue > alarm.value.normalMax
 })
 
 const handleConfirm = () => {
@@ -63,148 +72,90 @@ const handleConfirm = () => {
         >
             <div
                 v-if="alarmStore.isEmergencyPopupVisible && alarm"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 px-4 backdrop-blur-[2px]"
+                style="position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); padding: 0 1rem; backdrop-filter: blur(2px);"
             >
-                <section
-                    class="w-full max-w-[460px] overflow-hidden rounded-2xl border border-white/30 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.45),0_10px_25px_rgba(239,68,68,0.18)]"
-                >
+                <div style="width: 100%; max-width: 480px; background: white; border-radius: 16px; overflow: hidden; border: 0.5px solid #e5e7eb; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+
                     <!-- Header -->
-                    <div class="relative overflow-hidden bg-gradient-to-r from-red-600 via-red-500 to-red-600 px-5 py-4 text-white">
-                        <div class="absolute right-[-20px] top-[-20px] h-24 w-24 rounded-full bg-white/10 blur-2xl"></div>
-                        <div class="absolute left-[-10px] bottom-[-25px] h-20 w-20 rounded-full bg-black/10 blur-2xl"></div>
-
-                        <div class="relative flex items-start justify-between gap-3">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-white"></span>
-                                    <p class="text-xs font-semibold tracking-[0.18em] text-red-100">
-                                        EMERGENCY ALARM
-                                    </p>
-                                </div>
-
-                                <h2 class="mt-2 text-2xl font-bold leading-tight">
-                                    비상 알람 발생
-                                </h2>
+                    <div style="background: #DC2626; padding: 1.25rem 1.5rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: white;"></span>
+                                <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: rgba(255,255,255,0.8);">EMERGENCY ALARM</span>
                             </div>
-
-                            <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-bold shadow-inner">
-                                {{ alarm.severity }}
-                            </span>
+                            <span style="font-size: 11px; font-weight: 500; background: rgba(255,255,255,0.2); color: white; padding: 3px 10px; border-radius: 999px;">{{ alarm.severity }}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 28px; color: white;" aria-hidden="true"></i>
+                            <h2 style="margin: 0; font-size: 26px; font-weight: 600; color: white;">비상 알람 발생</h2>
                         </div>
                     </div>
 
                     <!-- Body -->
-                    <div class="space-y-4 px-5 py-5">
-                        <div class="rounded-xl bg-slate-50 p-4 shadow-inner">
-                            <p class="text-xs font-semibold tracking-wide text-slate-500">
-                                알람 메시지
-                            </p>
-                            <p class="mt-2 text-lg font-bold leading-snug text-slate-900">
-                                {{ alarm.message }}
-                            </p>
+                    <div style="padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 12px;">
+
+                        <div style="background: #f9fafb; border-radius: 8px; padding: 0.875rem 1rem;">
+                            <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px;">알람 메시지</p>
+                            <p style="font-size: 15px; font-weight: 500; color: #111827; margin: 0; line-height: 1.4;">{{ alarm.message }}</p>
                         </div>
 
-                        <div class="grid gap-3 rounded-xl bg-slate-50 p-4 text-sm shadow-inner md:grid-cols-2">
-                            <div>
-                                <p class="text-slate-500">
-                                    공정
-                                </p>
-                                <p class="mt-1 font-semibold text-slate-900">
-                                    {{ alarm.processName }}
-                                </p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div style="background: #f9fafb; border-radius: 8px; padding: 0.75rem 1rem;">
+                                <p style="font-size: 12px; color: #6b7280; margin: 0 0 3px;">공정</p>
+                                <p style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">{{ alarm.processName }}</p>
                             </div>
-
-                            <div>
-                                <p class="text-slate-500">
-                                    구역 / 설비
-                                </p>
-                                <p class="mt-1 font-semibold text-slate-900">
-                                    {{ targetText }}
-                                </p>
-                            </div>
-
-                            <div>
-                                <p class="text-slate-500">
-                                    태그명
-                                </p>
-                                <p class="mt-1 font-semibold text-slate-900">
-                                    {{ alarm.tagName }}
-                                </p>
-                            </div>
-
-                            <div>
-                                <p class="text-slate-500">
-                                    발생 횟수
-                                </p>
-                                <p class="mt-1 font-semibold text-slate-900">
-                                    {{ alarm.occurrenceCount }}회
-                                </p>
+                            <div style="background: #f9fafb; border-radius: 8px; padding: 0.75rem 1rem;">
+                                <p style="font-size: 12px; color: #6b7280; margin: 0 0 3px;">구역 / 설비</p>
+                                <p style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">{{ targetText }}</p>
                             </div>
                         </div>
 
-                        <div class="grid gap-3 md:grid-cols-3">
-                            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]">
-                                <p class="text-xs font-semibold text-slate-500">
-                                    측정값
-                                </p>
-                                <p class="mt-2 text-2xl font-bold text-red-600">
-                                    {{ measuredValueText }}
-                                </p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                            <div style="background: #f9fafb; border-radius: 8px; padding: 0.75rem 1rem;">
+                                <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px;">측정값</p>
+                                <p
+                                    style="font-size: 18px; font-weight: 500; margin: 0;"
+                                    :style="{ color: isExceeded ? '#DC2626' : '#2563EB' }"
+                                >{{ measuredValueText }}</p>
                             </div>
-
-                            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]">
-                                <p class="text-xs font-semibold text-slate-500">
-                                    정상 범위
-                                </p>
-                                <p class="mt-2 text-sm font-bold leading-6 text-slate-800">
-                                    {{ normalRangeText }}
-                                </p>
+                            <div style="background: #f9fafb; border-radius: 8px; padding: 0.75rem 1rem;">
+                                <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px;">정상 범위</p>
+                                <p style="font-size: 13px; font-weight: 500; color: #111827; margin: 0; line-height: 1.5;">{{ normalRangeText }}</p>
                             </div>
-
-                            <div class="rounded-2xl border border-orange-200 bg-orange-50 p-4 shadow-[0_8px_20px_rgba(251,146,60,0.12)]">
-                                <p class="text-xs font-semibold text-orange-700">
-                                    초과율
-                                </p>
-                                <p class="mt-2 text-2xl font-bold text-orange-600">
-                                    {{ exceedRate ? `${exceedRate}%` : '-' }}
-                                </p>
+                            <div
+                                style="border-radius: 8px; padding: 0.75rem 1rem;"
+                                :style="isExceeded
+                                    ? 'background: #FEF2F2; border: 0.5px solid #FCA5A5;'
+                                    : 'background: #EFF6FF; border: 0.5px solid #93C5FD;'"
+                            >
+                                <p
+                                    style="font-size: 12px; margin: 0 0 4px;"
+                                    :style="{ color: isExceeded ? '#991B1B' : '#1E40AF' }"
+                                >이탈률</p>
+                                <p
+                                    style="font-size: 18px; font-weight: 500; margin: 0;"
+                                    :style="{ color: isExceeded ? '#DC2626' : '#2563EB' }"
+                                >{{ deviationRate ? `${deviationRate}%` : '-' }}</p>
                             </div>
                         </div>
 
-                        <div class="rounded-2xl bg-slate-100 p-4 text-sm text-slate-600 shadow-inner">
-                            <p>
-                                발생 시각:
-                                <span class="font-semibold text-slate-900">
-                                    {{ alarm.occurredAt }}
-                                </span>
-                            </p>
-s
-
-                            <p class="mt-1">
-                                추가 비상 알람:
-                                <span class="font-semibold text-red-600">
-                                    {{ alarmStore.remainingEmergencyCount }}건
-                                </span>
-                            </p>
-
-                            <p class="mt-2 text-xs leading-5 text-slate-500">
-                                여러 비상 알람이 발생한 경우 가장 먼저 확인해야 할 알람 1건만 표시합니다.
-                                나머지 알람도 존재하며, 추후 알람 관리 화면에서 전체 확인이 가능합니다.
-                            </p>
+                        <div style="font-size: 12px; color: #6b7280; display: flex; align-items: center; justify-content: space-between;">
+                            <span>발생 시각: <span style="color: #111827; font-weight: 500;">{{ alarm.occurredAt }}</span></span>
+                            <span>추가 알람: <span style="color: #DC2626; font-weight: 500;">{{ alarmStore.remainingEmergencyCount }}건</span></span>
                         </div>
                     </div>
 
                     <!-- Footer -->
-                    <div class="flex justify-end border-t border-slate-100 bg-slate-50 px-5 py-4">
+                    <div style="padding: 0 1.5rem 1.5rem;">
                         <button
                             type="button"
-                            class="rounded-xl bg-red-600 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(220,38,38,0.25)] transition hover:-translate-y-0.5 hover:bg-red-700"
+                            style="width: 100%; padding: 1rem; background: #DC2626; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer;"
                             @click="handleConfirm"
                         >
                             확인
                         </button>
                     </div>
-                </section>
+                </div>
             </div>
         </Transition>
     </Teleport>

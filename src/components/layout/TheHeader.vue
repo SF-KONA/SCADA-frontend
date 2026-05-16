@@ -12,7 +12,7 @@
         <div class="flex items-center gap-3 border-r border-white/20 font-bold shrink-0" style="padding-right: 1rem;">
             <i class="fa-solid fa-microchip bg-white/15 p-3 rounded text-xl text-white"></i>
             <span class="text-2xl tracking-tight font-extrabold">
-                <span class="text-[#F97316]">Hi</span><span class="text-[#60A5FA]">CADA</span>
+                <span class="text-[#F97316]">Hi</span><span class="text-[#3B82F6]">CADA</span>
             </span>
         </div>
 
@@ -41,8 +41,22 @@
         <div class="flex items-center gap-5 shrink-0">
             <div class="flex items-center gap-2 text-[15px] text-white/80 font-medium">
                 <span class="w-2.5 h-2.5 bg-[#F97316] rounded-full animate-pulse"></span>
-                LIVE : {{ currentTime }} KST
+                {{ currentTime }} KST
             </div>
+            <!-- 비상 알람 아이콘 -->
+            <button
+                class="relative flex items-center justify-center w-9 h-9 rounded hover:bg-white/10 transition-colors text-white"
+                @click="$router.push('/alerts')"
+            >
+                <i class="fa-solid fa-bell text-lg"></i>
+                <span
+                    v-if="alarmStore.remainingEmergencyCount > 0"
+                    class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-[#F97316] text-white text-[10px] font-bold"
+                >
+                    {{ alarmStore.remainingEmergencyCount }}
+                </span>
+            </button>
+
             <div class="bg-white/10 px-4 py-2 rounded flex items-center gap-2 border border-white/10 text-[15px] text-white font-medium">
                 <i class="fa-solid fa-user-gear text-lg"></i>
                 <span>{{ userLabel }}</span>
@@ -63,11 +77,13 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useSidebarStore } from '@/stores/sidebar'
+import { useAlarmStore } from '@/stores/alarmStore'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 const sidebar = useSidebarStore()
+const alarmStore = useAlarmStore()
 
 const currentTime = ref('')
 let timer = null
@@ -81,13 +97,13 @@ const ROLE_LABEL = {
 const menus = [
     { name: '메인 대시보드', path: '/dashboard' },
     { name: '공정', path: '/equipment' },
-    { name: '설비', path: '/control' },
+    { name: '설비 제어', path: '/equipment-control' },
     { name: 'AI리포트', path: '/report' },
     { name: '알림 센터', path: '/alarm' },
     { name: '사용자 관리', path: '/users' },
 ]
 
-const isActive = (path) => route.path.startsWith(path)
+const isActive = (path) => route.path === path
 
 const userLabel = computed(() => {
     const user = auth.user

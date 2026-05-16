@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useUserStore } from '../../stores/userStore'
+import { useUserStore } from '@/stores/userStore'
 
 const userStore = useUserStore()
 
@@ -69,10 +69,10 @@ const handleCreateUser = async () => {
 </script>
 
 <template>
-    <main class="min-h-screen bg-slate-950 px-6 py-10">
-        <section class="mx-auto w-full max-w-2xl rounded-2xl border border-slate-800 bg-white p-8 shadow-2xl">
+    <main class="px-6 py-10">
+        <section class="mx-auto w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
             <div class="mb-8">
-                <p class="mb-2 text-sm font-semibold text-blue-700">
+                <p class="mb-2 text-sm font-semibold text-[#F97316]">
                     DB HiTek Smart Factory
                 </p>
                 <h1 class="text-2xl font-bold text-slate-900">
@@ -92,7 +92,7 @@ const handleCreateUser = async () => {
                         <input
                             v-model="userId"
                             type="text"
-                            class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#15803D] focus:ring-2 focus:ring-green-100"
                             placeholder="영문·숫자 4~16자"
                         />
                     </div>
@@ -104,7 +104,7 @@ const handleCreateUser = async () => {
                         <input
                             v-model="name"
                             type="text"
-                            class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#15803D] focus:ring-2 focus:ring-green-100"
                             placeholder="사용자 이름"
                         />
                     </div>
@@ -117,7 +117,7 @@ const handleCreateUser = async () => {
                     <input
                         v-model="email"
                         type="email"
-                        class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#15803D] focus:ring-2 focus:ring-green-100"
                         placeholder="example@dbhitek.com"
                     />
                 </div>
@@ -129,7 +129,7 @@ const handleCreateUser = async () => {
                     <input
                         v-model="password"
                         type="password"
-                        class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#15803D] focus:ring-2 focus:ring-green-100"
                         placeholder="8자 이상, 영문·숫자·특수문자 포함"
                     />
                 </div>
@@ -145,8 +145,8 @@ const handleCreateUser = async () => {
                             :key="option.value"
                             class="cursor-pointer rounded-xl border p-4 transition"
                             :class="role === option.value
-                                ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-100'
-                                : 'border-slate-200 hover:border-blue-300'"
+                                ? 'border-[#15803D] bg-green-50 ring-2 ring-green-100'
+                                : 'border-slate-200 hover:border-green-400'"
                         >
                             <input
                                 v-model="role"
@@ -161,7 +161,7 @@ const handleCreateUser = async () => {
                             <span class="mt-1 block text-xs text-slate-500">
                                 {{ option.description }}
                             </span>
-                            <span class="mt-2 block text-xs font-semibold text-blue-700">
+                            <span class="mt-2 block text-xs font-semibold text-[#15803D]">
                                 {{ option.value }}
                             </span>
                         </label>
@@ -188,14 +188,14 @@ const handleCreateUser = async () => {
                 </div>
 
                 <div class="flex items-center justify-between pt-2">
-                    <RouterLink to="/dashboard" class="text-sm font-medium text-slate-500 hover:text-blue-700">
+                    <RouterLink to="/dashboard" class="text-sm font-medium text-slate-500 hover:text-[#15803D]">
                         대시보드로 이동
                     </RouterLink>
 
                     <button
                         type="submit"
                         :disabled="isLoading"
-                        class="rounded-lg bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="rounded-lg bg-[#15803D] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#166534] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {{ isLoading ? '등록 중...' : '사용자 등록' }}
                     </button>
