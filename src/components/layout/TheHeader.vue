@@ -44,18 +44,50 @@
                 {{ currentTime }} KST
             </div>
             <!-- 비상 알람 아이콘 -->
-            <button
-                class="relative flex items-center justify-center w-9 h-9 rounded hover:bg-white/10 transition-colors text-white"
-                @click="$router.push('/alerts')"
-            >
-                <i class="fa-solid fa-bell text-lg"></i>
-                <span
-                    v-if="alarmStore.remainingEmergencyCount > 0"
-                    class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-[#F97316] text-white text-[10px] font-bold"
+            <div class="relative">
+                <button
+                    class="relative flex items-center justify-center w-9 h-9 rounded hover:bg-white/10 transition-colors text-white"
+                    @click="isAlarmDropdownOpen = !isAlarmDropdownOpen"
                 >
-                    {{ alarmStore.remainingEmergencyCount }}
-                </span>
-            </button>
+                    <i class="fa-solid fa-bell text-lg"></i>
+                    <span
+                        v-if="alarmStore.totalEmergencyCount > 0"
+                        class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-[#F97316] text-white text-[10px] font-bold"
+                    >
+                        {{ alarmStore.totalEmergencyCount }}
+                    </span>
+                </button>
+
+                <!-- 드롭다운 backdrop -->
+                <div
+                    v-if="isAlarmDropdownOpen"
+                    class="fixed inset-0 z-40"
+                    @click="isAlarmDropdownOpen = false"
+                ></div>
+
+                <!-- 드롭다운 패널 -->
+                <div
+                    v-if="isAlarmDropdownOpen"
+                    class="absolute right-0 top-12 z-50 w-72 rounded-xl border border-gray-200 bg-white shadow-xl overflow-hidden"
+                >
+                    <div v-if="alarmList.length === 0" class="px-4 py-6 text-center text-sm text-gray-400">
+                        비상 알람 없음
+                    </div>
+
+                    <div v-else class="max-h-72 overflow-y-auto divide-y divide-gray-100">
+                        <div
+                            v-for="alarm in alarmList"
+                            :key="alarm.alarmId"
+                            class="flex items-center gap-3 px-4 py-3"
+                        >
+                            <i class="fa-solid fa-triangle-exclamation text-red-500 shrink-0"></i>
+                            <p class="text-sm font-medium text-gray-900 leading-snug">
+                                {{ alarm.message }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="bg-white/10 px-4 py-2 rounded flex items-center gap-2 border border-white/10 text-[15px] text-white font-medium">
                 <i class="fa-solid fa-user-gear text-lg"></i>
@@ -86,7 +118,15 @@ const sidebar = useSidebarStore()
 const alarmStore = useAlarmStore()
 
 const currentTime = ref('')
+const isAlarmDropdownOpen = ref(false)
 let timer = null
+
+const alarmList = computed(() => {
+    const list = []
+    if (alarmStore.currentEmergencyAlarm) list.push(alarmStore.currentEmergencyAlarm)
+    list.push(...alarmStore.emergencyQueue)
+    return list
+})
 
 const ROLE_LABEL = {
     ADMIN: '관리자',
