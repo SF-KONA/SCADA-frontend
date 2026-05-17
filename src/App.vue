@@ -33,7 +33,7 @@ watch(
         <TheHeader />
         <div class="flex flex-1 overflow-hidden">
             <TheSidebar />
-            <main class="flex-1 overflow-y-auto px-10 py-8">
+            <main class="flex-1 overflow-hidden flex flex-col" :class="route.meta.fullPage ? '' : 'px-10 py-8 overflow-y-auto'">
                 <router-view />
             </main>
         </div>

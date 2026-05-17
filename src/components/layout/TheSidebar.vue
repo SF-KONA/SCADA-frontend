@@ -6,8 +6,8 @@
         ]"
     >
         <nav class="flex-1 px-4 py-4 space-y-2 w-60">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 pb-3">
-                Menug
+            <p class="text-sm font-bold text-gray-400 uppercase tracking-widest px-3 pb-3">
+                Menu
             </p>
 
             <router-link
