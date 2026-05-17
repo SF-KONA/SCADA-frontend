@@ -58,7 +58,7 @@ const routes = [
         path: '/users',
         name: 'UserManagement',
         component: () => import('@/views/UserManagement.vue'),
-        meta: { requiresAuth: true, adminOnly: true },
+        meta: { requiresAuth: true, adminOnly: true, fullPage: true },
     },
     {
         path: '/users/create',
