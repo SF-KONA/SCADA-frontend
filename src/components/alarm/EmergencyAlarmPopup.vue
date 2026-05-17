@@ -83,7 +83,6 @@ const handleConfirm = () => {
                                 <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: white;"></span>
                                 <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: rgba(255,255,255,0.8);">EMERGENCY ALARM</span>
                             </div>
-                            <span style="font-size: 11px; font-weight: 500; background: rgba(255,255,255,0.2); color: white; padding: 3px 10px; border-radius: 999px;">{{ alarm.severity }}</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                             <i class="fa-solid fa-triangle-exclamation" style="font-size: 28px; color: white;" aria-hidden="true"></i>
