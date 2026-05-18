@@ -45,11 +45,12 @@ const config = computed(() => {
     }
 })
 
-const remaining = computed(() => MAX - comment.value.length)
 const isOverflow = computed(() => comment.value.length > MAX)
+const isEmpty = computed(() => comment.value.trim().length === 0)
+const isInvalid = computed(() => isOverflow.value || isEmpty.value)
 
 const handleConfirm = () => {
-    if (isOverflow.value) return
+    if (isInvalid.value) return
     emit('confirm', comment.value.trim())
 }
 </script>
@@ -86,10 +87,17 @@ const handleConfirm = () => {
                     :placeholder="config.placeholder"
                 ></textarea>
 
-                <div class="mt-2 flex justify-end text-xs"
-                    :class="isOverflow ? 'text-red-600' : 'text-gray-400'"
-                >
-                    {{ comment.length }} / {{ MAX }}
+                <div class="mt-2 flex items-center justify-between text-xs">
+                    <span
+                        v-if="isEmpty"
+                        class="text-red-600"
+                    >
+                        변경 사유를 입력해주세요.
+                    </span>
+                    <span v-else></span>
+                    <span :class="isOverflow ? 'text-red-600' : 'text-gray-400'">
+                        {{ comment.length }} / {{ MAX }}
+                    </span>
                 </div>
             </div>
 
@@ -105,7 +113,7 @@ const handleConfirm = () => {
                     type="button"
                     class="rounded-lg px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
                     :class="config.confirmClass"
-                    :disabled="isOverflow"
+                    :disabled="isInvalid"
                     @click="handleConfirm"
                 >
                     {{ config.confirmLabel }}

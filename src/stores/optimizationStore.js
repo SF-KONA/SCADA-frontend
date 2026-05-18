@@ -8,8 +8,10 @@ import {
     getControllableParameters,
     updateEquipmentParameter,
 } from '@/api/equipmentControlApi'
+import { getOptimizationHistory } from '@/api/optimizationApi'
 
 const COMMENT_MAX = 200
+const HISTORY_MAX = 5
 
 const unwrapList = response => {
     const payload = response?.data?.data
@@ -91,11 +93,67 @@ export const useOptimizationStore = defineStore('optimization', {
             this.selectedEquipmentId = equipmentId
             try {
                 const response = await getControllableParameters(equipmentId)
-                this.controllableParameters = unwrapList(response)
+                this.controllableParameters = unwrapList(response).map(item => ({
+                    ...item,
+                    equipmentId: item.equipmentId || equipmentId,
+                }))
             } catch (error) {
                 this.errorMessage =
                     error?.response?.data?.message || '제어 파라미터를 불러오지 못했습니다.'
             }
+        },
+
+        async fetchHistory(equipmentId) {
+            try {
+                const response = await getOptimizationHistory(equipmentId, HISTORY_MAX)
+                const body = response?.data
+
+                // 응답 shape 방어:
+                // 1. { data: [...] }            ← 명세
+                // 2. [...]
+                // 3. { items: [...] }
+                // 4. { data: { items: [...] } }
+                let items = []
+                if (Array.isArray(body)) {
+                    items = body
+                } else if (Array.isArray(body?.data)) {
+                    items = body.data
+                } else if (Array.isArray(body?.items)) {
+                    items = body.items
+                } else if (Array.isArray(body?.data?.items)) {
+                    items = body.data.items
+                }
+
+                this.history = items.slice(0, HISTORY_MAX)
+            } catch (error) {
+                this.history = []
+            }
+        },
+
+        async fetchControllableParametersForEquipments(equipmentIds) {
+            const unique = [...new Set((equipmentIds || []).filter(Boolean))]
+            if (!unique.length) {
+                this.controllableParameters = []
+                return
+            }
+
+            const results = await Promise.allSettled(
+                unique.map(id => getControllableParameters(id)),
+            )
+
+            const merged = []
+            results.forEach((r, idx) => {
+                if (r.status !== 'fulfilled') return
+                const equipmentId = unique[idx]
+                for (const item of unwrapList(r.value)) {
+                    merged.push({
+                        ...item,
+                        equipmentId: item.equipmentId || equipmentId,
+                    })
+                }
+            })
+
+            this.controllableParameters = merged
         },
 
         async applyOne(suggestionId, comment) {
@@ -119,6 +177,8 @@ export const useOptimizationStore = defineStore('optimization', {
                 this.history.unshift({
                     actionId: result.actionId,
                     suggestionId: result.suggestionId,
+                    equipmentId: target?.equipmentId,
+                    parameterTag: target?.parameterTag,
                     tagName: target?.tagName,
                     unit: target?.unit,
                     beforeValue: result.beforeValue,
@@ -128,6 +188,9 @@ export const useOptimizationStore = defineStore('optimization', {
                     actedAt: result.actedAt,
                     yieldImpact: target?.yieldImpact,
                 })
+                if (this.history.length > HISTORY_MAX) {
+                    this.history = this.history.slice(0, HISTORY_MAX)
+                }
             }
 
             return result
@@ -148,6 +211,25 @@ export const useOptimizationStore = defineStore('optimization', {
                 target.actionType = 'REJECT'
                 target.comment = trimmed
                 target.actedAt = result?.actedAt || new Date().toISOString()
+            }
+
+            if (result) {
+                this.history.unshift({
+                    actionId: result.actionId,
+                    suggestionId: result.suggestionId,
+                    equipmentId: target?.equipmentId,
+                    parameterTag: target?.parameterTag,
+                    tagName: target?.tagName,
+                    unit: target?.unit,
+                    beforeValue: result.beforeValue,
+                    afterValue: result.afterValue,
+                    actionType: result.actionType || 'REJECT',
+                    comment: result.comment,
+                    actedAt: result.actedAt,
+                })
+                if (this.history.length > HISTORY_MAX) {
+                    this.history = this.history.slice(0, HISTORY_MAX)
+                }
             }
 
             return result
@@ -204,15 +286,17 @@ export const useOptimizationStore = defineStore('optimization', {
                 comment: trimmed,
             })
 
+            const result = response?.data?.data
+
             const param = this.controllableParameters.find(p => p.paramId === paramId)
             if (param) {
-                param.beforeValue = param.currentValue
-                param.currentValue = numericValue
+                param.beforeValue = result?.beforeValue ?? param.currentValue
+                param.currentValue = result?.afterValue ?? numericValue
                 param.comment = trimmed
-                param.changedAt = new Date().toISOString()
+                param.changedAt = result?.actedAt || new Date().toISOString()
             }
 
-            return response?.data?.data
+            return result
         },
 
         clearMessage() {

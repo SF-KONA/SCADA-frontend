@@ -58,8 +58,13 @@ const handleSubmit = parameter => {
                             <p class="mt-1 text-xs text-gray-400">{{ parameter.tagCode }}</p>
                         </td>
 
-                        <td class="px-4 py-4 font-bold text-gray-900">
-                            {{ parameter.currentValue ?? '-' }}{{ parameter.unit }}
+                        <td class="px-4 py-4">
+                            <template v-if="parameter.currentValue != null">
+                                <span class="font-bold text-gray-900">
+                                    {{ parameter.currentValue }}{{ parameter.unit }}
+                                </span>
+                            </template>
+                            <span v-else class="text-xs text-gray-400">수집 중</span>
                         </td>
 
                         <td class="px-4 py-4 text-gray-600">

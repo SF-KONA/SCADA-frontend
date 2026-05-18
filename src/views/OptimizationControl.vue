@@ -109,9 +109,14 @@ const oeeDeltaInfo = computed(() => {
 const formatPercent = v => (v == null ? '—' : `${Number(v).toFixed(1)}%`)
 
 onMounted(async () => {
+    await store.fetchSuggestions()
+    const equipmentIds = [
+        store.selectedEquipmentId,
+        ...store.suggestions.map(s => s.equipmentId),
+    ]
     await Promise.all([
-        store.fetchSuggestions(),
-        store.fetchControllableParameters(store.selectedEquipmentId),
+        store.fetchControllableParametersForEquipments(equipmentIds),
+        store.fetchHistory(store.selectedEquipmentId),
     ])
 })
 </script>
@@ -221,6 +226,7 @@ onMounted(async () => {
                     :suggestions="store.suggestions"
                     :parameters="store.controllableParameters"
                     :pending-count="store.pendingCount"
+                    :abnormal-count="store.abnormalParamCount"
                     :is-applying="store.isApplying"
                     @apply="openApplyModal"
                     @reject="openRejectModal"
@@ -234,7 +240,10 @@ onMounted(async () => {
                     :predicted-oee="store.predictedOee"
                     :suggestions="store.suggestions"
                 />
-                <OptimizationHistoryList :history="store.history" />
+                <OptimizationHistoryList
+                    :history="store.history"
+                    :parameters="store.controllableParameters"
+                />
             </aside>
         </div>
 
