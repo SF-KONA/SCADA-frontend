@@ -1,3 +1,4 @@
+// 설비 상세 페이지
 <template>
   <div class="eq-container">
     <!-- 브레드크럼 -->
