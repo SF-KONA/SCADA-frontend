@@ -58,7 +58,7 @@ const routes = [
         path: '/users',
         name: 'UserManagement',
         component: () => import('@/views/UserManagement.vue'),
-        meta: { requiresAuth: true, adminOnly: true },
+        meta: { requiresAuth: true, adminOnly: true, fullPage: true },
     },
     {
         path: '/users/create',
@@ -75,6 +75,24 @@ const routes = [
         name: 'AlertList',
         component: () => import('@/views/alerts/AlertListView.vue'),
         meta: { requiresAuth: true },
+    },
+    {
+        path: '/equipment-control',
+        name: 'EquipmentControl',
+        component: () => import('@/views/equipment/EquipmentControlView.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+    path: '/process',
+    name: 'ProcessOverview',
+    component: () => import('@/views/process/ProcessOverview.vue'),
+    meta: { requiresAuth: true },
+    },
+    {
+    path: '/process/:stepNo/equipment',
+    name: 'EquipmentDetail',
+    component: () => import('@/views/process/EquipmentDetail.vue'),
+    meta: { requiresAuth: true },
     },
 ]
 

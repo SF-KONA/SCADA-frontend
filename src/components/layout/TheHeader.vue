@@ -51,10 +51,10 @@
                 >
                     <i class="fa-solid fa-bell text-lg"></i>
                     <span
-                        v-if="alarmStore.totalEmergencyCount > 0"
+                        v-if="alarmList.length > 0"
                         class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-[#F97316] text-white text-[10px] font-bold"
                     >
-                        {{ alarmStore.totalEmergencyCount }}
+                        {{ alarmList.length }}
                     </span>
                 </button>
 
@@ -81,9 +81,15 @@
                             class="flex items-center gap-3 px-4 py-3"
                         >
                             <i class="fa-solid fa-triangle-exclamation text-red-500 shrink-0"></i>
-                            <p class="text-sm font-medium text-gray-900 leading-snug">
+                            <p class="flex-1 text-sm font-medium text-gray-900 leading-snug">
                                 {{ alarm.message }}
                             </p>
+                            <button
+                                class="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                                @click.stop="dismissAlarm(alarm.alarmId)"
+                            >
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -119,14 +125,19 @@ const alarmStore = useAlarmStore()
 
 const currentTime = ref('')
 const isAlarmDropdownOpen = ref(false)
+const dismissedAlarmIds = ref(new Set())
 let timer = null
 
 const alarmList = computed(() => {
     const list = []
     if (alarmStore.currentEmergencyAlarm) list.push(alarmStore.currentEmergencyAlarm)
     list.push(...alarmStore.emergencyQueue)
-    return list
+    return list.filter(a => !dismissedAlarmIds.value.has(a.alarmId))
 })
+
+const dismissAlarm = (alarmId) => {
+    dismissedAlarmIds.value = new Set([...dismissedAlarmIds.value, alarmId])
+}
 
 const ROLE_LABEL = {
     ADMIN: '관리자',
@@ -136,8 +147,8 @@ const ROLE_LABEL = {
 
 const menus = [
     { name: '메인 대시보드', path: '/dashboard' },
-    { name: '공정', path: '/equipment' },
-    { name: '설비 제어', path: '/control' },
+    { name: '공정', path: '/process' },
+    { name: '설비 제어', path: '/equipment-control' },
     { name: 'AI리포트', path: '/report' },
     { name: '알림 센터', path: '/alarm' },
     { name: '사용자 관리', path: '/users' },

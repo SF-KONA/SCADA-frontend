@@ -6,8 +6,8 @@
         ]"
     >
         <nav class="flex-1 px-4 py-4 space-y-2 w-60">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 pb-3">
-                Menug
+            <p class="text-sm font-bold text-gray-400 uppercase tracking-widest px-3 pb-3">
+                Menu
             </p>
 
             <router-link
@@ -41,8 +41,8 @@ const sidebar = useSidebarStore()
 
 const navItems = [
     { name: '메인 대시보드', path: '/dashboard', icon: 'fa-solid fa-gauge-high' },
-    { name: '공정', path: '/equipment', icon: 'fa-solid fa-industry' },
-    { name: '설비 제어', path: '/control', icon: 'fa-solid fa-sliders' },
+    { name: '공정', path: '/process', icon: 'fa-solid fa-industry' },
+    { name: '설비 제어', path: '/equipment-control', icon: 'fa-solid fa-sliders' },
     { name: 'AI리포트', path: '/report', icon: 'fa-solid fa-chart-line' },
     { name: '알림 센터', path: '/alarm', icon: 'fa-solid fa-bell' },
     { name: '사용자 관리', path: '/users', icon: 'fa-solid fa-users-gear' },
