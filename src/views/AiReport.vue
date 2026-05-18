@@ -199,7 +199,7 @@ const renderedNarrative = computed(() => {
 
 const fetchReportList = async () => {
   try {
-    const res = await http.get('/api/reports', { params: { page: 1, size: 20 } })
+    const res = await http.get('/reports', { params: { page: 1, size: 20 } })
     reportList.value = res.data.data.items
   } catch (e) { console.error('목록 조회 실패', e) }
 }
@@ -210,7 +210,7 @@ const submitQuery = async () => {
   loadingStep.value   = 0
   currentReport.value = null
   try {
-    const res   = await http.post('/api/reports', { query_text: queryText.value })
+    const res   = await http.post('/reports', { query_text: queryText.value })
     const jobId = res.data.data.job_id
     currentJobId.value = jobId
     queryText.value    = ''
@@ -252,7 +252,7 @@ const connectWebSocket = (jobId) => {
 
 const loadReport = async (jobId) => {
   try {
-    const res = await http.get(`/api/reports/${jobId}`)
+    const res = await http.get(`/reports/${jobId}`)
     currentReport.value = res.data.data
     currentJobId.value  = jobId
     await nextTick()
@@ -293,7 +293,7 @@ const renderCharts = () => {
 const downloadPdf = async () => {
   if (!currentJobId.value) return
   try {
-    const res = await http.get(`/api/reports/${currentJobId.value}/pdf`, { responseType: 'blob' })
+    const res = await http.get(`/reports/${currentJobId.value}/pdf`, { responseType: 'blob' })
     const url = URL.createObjectURL(res.data)
     const a   = document.createElement('a')
     a.href = url; a.download = `report_${currentJobId.value}.pdf`; a.click()
