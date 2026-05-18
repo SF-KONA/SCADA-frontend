@@ -95,7 +95,10 @@ async function initFromHistory() {
     try {
         const wsBase = import.meta.env.VITE_WS_BASE_URL ?? 'ws://localhost:8080'
         const httpBase = wsBase.replace(/^ws/, 'http')
-        const res = await fetch(`${httpBase}/api/environment/history`)
+        const token = sessionStorage.getItem('accessToken')
+        const res = await fetch(`${httpBase}/api/environment/history`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
         const data = await res.json()
         for (const entry of data) {
             const { item, zone, value, status, normalMin, normalMax, trend } = entry
