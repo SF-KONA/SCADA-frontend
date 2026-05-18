@@ -79,7 +79,7 @@ const routes = [
     {
         path: '/equipment-control',
         name: 'EquipmentControl',
-        component: () => import('@/views/equipment/EquipmentControlView.vue'),
+        component: () => import('@/views/OptimizationControl.vue'),
         meta: { requiresAuth: true },
     },
     {
