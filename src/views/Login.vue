@@ -46,7 +46,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import api from '@/api/index'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -56,10 +55,15 @@ const isLoading = ref(false)
 const errorMsg = ref('')
 
 const handleLogin = async () => {
-  auth.setAuth(
-      { name: '이구아나', role: 'ADMIN' },
-      'mock-token'
-  )
-  router.push('/dashboard')
+  isLoading.value = true
+  errorMsg.value = ''
+  try {
+    await auth.login({ userId: form.value.userId, password: form.value.password })
+    router.push('/dashboard')
+  } catch (e) {
+    errorMsg.value = e?.response?.data?.message || '아이디 또는 비밀번호가 올바르지 않습니다.'
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
