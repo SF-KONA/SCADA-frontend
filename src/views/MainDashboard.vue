@@ -26,7 +26,7 @@ const periodLabel = p => ({ today: '오늘', week: '이번 주', month: '이번 
 const STATUS_PRIORITY = { ALARM: 0, RUN: 1, IDLE: 2 }
 
 const sortedEquipments = computed(() => {
-    const items = store.equipments?.items ?? []
+    const items = store.equipments?.equipments ?? []
     return [...items].sort((a, b) =>
         (STATUS_PRIORITY[a.status] ?? 99) - (STATUS_PRIORITY[b.status] ?? 99)
     )
@@ -201,7 +201,7 @@ const initEnvChart = (sensor, el) => {
                 .join('<br>'),
         },
         xAxis: { type: 'category', data: times, show: false, boundaryGap: false },
-        yAxis: { type: 'value', min: sensor.yMin, max: sensor.yMax, show: false },
+        yAxis: { type: 'value', show: false },
         series: [
             ...sensor.zones.map(z => ({
                 name: z.label,
@@ -226,13 +226,27 @@ const initEnvChart = (sensor, el) => {
     return chart
 }
 
+const updateEnvChart = (chart, sensor) => {
+    const times = store.environment?.times ?? []
+    chart.setOption({
+        xAxis: { data: times },
+        series: [
+            ...sensor.zones.map(z => ({ data: z.trend })),
+            { data: Array(times.length).fill(sensor.threshold) },
+        ],
+    })
+}
+
 const initEnvCharts = () => {
     if (!store.environment) return
     store.environment.sensors.forEach((sensor, i) => {
         const el = envChartRefs.value[i]
         if (!el) return
-        if (envChartInstances[i]) envChartInstances[i].dispose()
-        envChartInstances[i] = initEnvChart(sensor, el)
+        if (!envChartInstances[i]) {
+            envChartInstances[i] = initEnvChart(sensor, el)
+        } else {
+            updateEnvChart(envChartInstances[i], sensor)
+        }
     })
 }
 
@@ -423,13 +437,13 @@ onBeforeUnmount(() => {
                             <div
                                 v-for="(sensor, i) in store.environment.sensors" :key="sensor.item"
                                 class="rounded-[10px] border p-3"
-                                :class="sensor.zones.some(z => z.status === 'ALARM')   ? 'border-red-200 bg-red-50/40'
+                                :class="sensor.zones.some(z => z.status === 'CRITICAL')   ? 'border-red-200 bg-red-50/40'
                                       : sensor.zones.some(z => z.status === 'WARNING') ? 'border-orange-200 bg-orange-50/30'
                                       : 'border-gray-200 bg-gray-50/60'"
                             >
                                 <div class="flex items-start justify-between mb-1.5">
                                     <p class="text-[11px] font-bold text-slate-700">{{ sensor.label }}</p>
-                                    <span v-if="sensor.zones.some(z => z.status === 'ALARM')"
+                                    <span v-if="sensor.zones.some(z => z.status === 'CRITICAL')"
                                         class="rounded px-1.5 py-0.5 text-[9px] font-bold bg-red-100 text-red-600">알람</span>
                                     <span v-else-if="sensor.zones.some(z => z.status === 'WARNING')"
                                         class="rounded px-1.5 py-0.5 text-[9px] font-bold bg-yellow-100 text-yellow-700">주의</span>
@@ -440,7 +454,7 @@ onBeforeUnmount(() => {
                                 <div class="flex gap-2 flex-wrap mb-1">
                                     <span v-for="z in sensor.zones" :key="z.zone"
                                         class="text-[10px] font-semibold"
-                                        :style="{ color: z.status === 'ALARM' ? '#dc2626' : z.status === 'WARNING' ? '#ea580c' : ZONE_COLORS[z.zone] }">
+                                        :style="{ color: z.status === 'CRITICAL' ? '#dc2626' : z.status === 'WARNING' ? '#ea580c' : ZONE_COLORS[z.zone] }">
                                         {{ z.label }}: {{ z.value }}{{ sensor.unit }}<span v-if="z.status !== 'NORMAL'"> ⚠</span>
                                     </span>
                                 </div>
