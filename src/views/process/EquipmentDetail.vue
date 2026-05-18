@@ -1,4 +1,3 @@
-// 설비 상세 페이지
 <template>
   <div class="eq-container">
     <!-- 브레드크럼 -->
@@ -9,7 +8,7 @@
     </div>
 
     <div class="eq-layout">
-      <!-- ───── 좌측: 설비 목록 ───── -->
+      <!-- 좌측: 설비 목록 -->
       <div class="eq-sidebar">
         <p class="sidebar-title">설비 선택</p>
         <div
@@ -24,7 +23,6 @@
           <span class="eq-item-dot" :class="'dot-' + statusClass(eq.currentStatus)"></span>
         </div>
 
-        <!-- 시간 범위 -->
         <div class="period-section">
           <p class="period-label">시간 범위 선택</p>
           <div class="period-btns">
@@ -41,7 +39,7 @@
         </div>
       </div>
 
-      <!-- ───── 우측: 상세 ───── -->
+      <!-- 우측: 상세 -->
       <div class="eq-main">
         <div v-if="!selectedId" class="empty-state">
           <p class="empty-text">좌측에서 설비를 선택하세요</p>
@@ -130,7 +128,6 @@
                 </tbody>
               </table>
             </div>
-            <!-- 페이징 -->
             <div v-if="eventTotalPages > 1" class="pagination">
               <button class="page-btn" :disabled="eventPage === 1" @click="loadEvents(eventPage - 1)">이전</button>
               <span class="page-info">{{ eventPage }} / {{ eventTotalPages }}</span>
@@ -211,14 +208,14 @@ const eventPage = ref(1)
 const eventTotalPages = ref(1)
 
 const showNoteInput = ref(false)
-const chartRefs = ref([])
 const noteText = ref('')
+const chartRefs = ref([])
 
 onMounted(async () => {
   try {
     const res = await getEquipmentList(stepNo.value)
-    processName.value = res.data.processName
-    equipmentList.value = res.data.items
+    processName.value = res.data.data.processName
+    equipmentList.value = res.data.data.items
     if (equipmentList.value.length > 0) {
       selectEquipment(equipmentList.value[0])
     }
@@ -246,15 +243,35 @@ const loadParameters = async () => {
   try {
     paramLoading.value = true
     const res = await getEquipmentParameters(selectedId.value, period.value)
-    parameters.value = res.data.parameters
-    overallStatus.value = res.data.overallStatus
-    overallStatusLabel.value = res.data.overallStatusLabel
+    parameters.value = res.data.data.parameters
+    overallStatus.value = res.data.data.overallStatus
+    overallStatusLabel.value = res.data.data.overallStatusLabel
     await nextTick()
     renderCharts()
   } catch (e) {
     console.error('파라미터 조회 실패', e)
   } finally {
     paramLoading.value = false
+  }
+}
+
+const loadAlarms = async () => {
+  try {
+    const res = await getEquipmentAlarms(selectedId.value)
+    alarms.value = res.data.data.items
+  } catch (e) {
+    console.error('알람 조회 실패', e)
+  }
+}
+
+const loadEvents = async (page) => {
+  try {
+    eventPage.value = page
+    const res = await getEquipmentEvents(selectedId.value, page, 10)
+    events.value = res.data.data.items
+    eventTotalPages.value = res.data.data.totalPages
+  } catch (e) {
+    console.error('이벤트 조회 실패', e)
   }
 }
 
@@ -311,26 +328,6 @@ const renderCharts = () => {
   })
 }
 
-const loadAlarms = async () => {
-  try {
-    const res = await getEquipmentAlarms(selectedId.value)
-    alarms.value = res.data.items
-  } catch (e) {
-    console.error('알람 조회 실패', e)
-  }
-}
-
-const loadEvents = async (page) => {
-  try {
-    eventPage.value = page
-    const res = await getEquipmentEvents(selectedId.value, page, 10)
-    events.value = res.data.items
-    eventTotalPages.value = res.data.totalPages
-  } catch (e) {
-    console.error('이벤트 조회 실패', e)
-  }
-}
-
 const submitNote = async () => {
   try {
     await addEquipmentNote(selectedId.value, noteText.value)
@@ -366,17 +363,14 @@ const eqIcon = (s) => ({
 
 .eq-container { max-width: 1400px; margin: 0 auto; }
 
-/* 브레드크럼 */
 .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
 .bread-link { background: none; border: none; color: #15803d; font-size: 13px; font-weight: 600; cursor: pointer; }
 .bread-link:hover { text-decoration: underline; }
 .bread-sep { font-size: 10px; color: #ccc; }
 .bread-current { font-size: 13px; color: #888; }
 
-/* 레이아웃 */
 .eq-layout { display: flex; gap: 20px; height: calc(100vh - 180px); }
 
-/* 사이드바 */
 .eq-sidebar {
   width: 200px; flex-shrink: 0;
   background: #fff; border: 1px solid #e8e8e4; border-radius: 14px;
@@ -409,7 +403,6 @@ const eqIcon = (s) => ({
 .period-btn:hover { border-color: #15803d; color: #15803d; }
 .period-active { background: #15803d; color: #fff; border-color: #15803d; }
 
-/* 메인 */
 .eq-main {
   flex: 1; overflow-y: auto;
   display: flex; flex-direction: column; gap: 20px;
@@ -420,7 +413,6 @@ const eqIcon = (s) => ({
 .loading-area { display: flex; justify-content: center; padding: 80px 0; }
 .loading-spinner { width: 36px; height: 36px; border: 3px solid #e8e8e4; border-top-color: #15803d; border-radius: 50%; animation: spin 0.8s linear infinite; }
 
-/* 설비 헤더 */
 .eq-header { display: flex; align-items: center; justify-content: space-between; }
 .eq-title { font-size: 18px; font-weight: 700; color: #1a1a1a; }
 .eq-title-sub { font-size: 13px; font-weight: 400; color: #999; margin-left: 8px; }
@@ -429,7 +421,6 @@ const eqIcon = (s) => ({
 .badge-warning { background: #fffbeb; color: #d97706; }
 .badge-critical { background: #fef2f2; color: #dc2626; }
 
-/* 파라미터 카드 */
 .param-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
 .param-card {
   background: #fff; border: 1.5px solid #e8e8e4; border-radius: 12px; padding: 16px;
@@ -445,7 +436,6 @@ const eqIcon = (s) => ({
 .param-range { font-size: 10px; color: #bbb; margin-top: 4px; }
 .param-chart { width: 100%; height: 80px; margin-top: 8px; }
 
-/* 실시간 수치 */
 .section-label { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
 .realtime-panel { background: #fff; border: 1px solid #e8e8e4; border-radius: 14px; padding: 20px; }
 .realtime-list { display: flex; flex-direction: column; gap: 8px; }
@@ -458,7 +448,6 @@ const eqIcon = (s) => ({
 .text-critical { color: #dc2626; }
 .rt-range { font-size: 11px; color: #bbb; }
 
-/* 이벤트 테이블 */
 .event-section { background: #fff; border: 1px solid #e8e8e4; border-radius: 14px; padding: 20px; }
 .event-table-wrap { overflow-x: auto; }
 .event-table { width: 100%; border-collapse: collapse; }
@@ -488,7 +477,6 @@ const eqIcon = (s) => ({
 .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .page-info { font-size: 12px; color: #999; }
 
-/* 알람 */
 .alarm-section { background: #fff; border: 1px solid #e8e8e4; border-radius: 14px; padding: 20px; }
 .alarm-empty { font-size: 12px; color: #ccc; text-align: center; padding: 16px 0; }
 .alarm-card { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 14px; margin-bottom: 8px; }
@@ -497,7 +485,6 @@ const eqIcon = (s) => ({
 .alarm-msg { font-size: 13px; color: #1a1a1a; font-weight: 600; }
 .alarm-time { font-size: 10px; color: #999; margin-top: 4px; }
 
-/* 관리자 의견 */
 .note-section { padding-bottom: 40px; }
 .note-btn {
   width: 100%; padding: 14px; background: #15803d; color: #fff;
