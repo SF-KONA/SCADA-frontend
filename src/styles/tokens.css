@@ -1,0 +1,20 @@
+:root {
+    --scada-primary: #0f7a3d;
+    --scada-primary-dark: #0b3d2e;
+    --scada-accent: #f97316;
+
+    --status-danger: #dc2626;
+
+    --surface-main: #ffffff;
+
+    --border-default: #cfd9d3;
+
+    --text-main: #17211b;
+    --text-sub: #5f6f66;
+    --text-muted: #8a9990;
+    --text-inverse: #ffffff;
+
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-xl: 16px;
+}
