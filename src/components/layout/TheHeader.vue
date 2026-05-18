@@ -147,7 +147,7 @@ const ROLE_LABEL = {
 
 const menus = [
     { name: '메인 대시보드', path: '/dashboard' },
-    { name: '공정', path: '/equipment' },
+    { name: '공정', path: '/process' },
     { name: '설비 제어', path: '/equipment-control' },
     { name: 'AI리포트', path: '/report' },
     { name: '알림 센터', path: '/alarm' },
