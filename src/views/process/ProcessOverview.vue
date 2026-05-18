@@ -173,8 +173,8 @@ const fetchProcessList = async () => {
   try {
     loading.value = true
     const res = await getProcessList()
-    items.value = res.data.items
-    updatedAt.value = new Date(res.data.updatedAt).toLocaleString('ko-KR', {
+    items.value = res.data.data.items
+    updatedAt.value = new Date(res.data.data.updatedAt).toLocaleString('ko-KR', {
       year: 'numeric', month: '2-digit', day: '2-digit',
       hour: '2-digit', minute: '2-digit', second: '2-digit',
     }) + ' KST'
@@ -198,7 +198,7 @@ const fetchPartner = async (stepNo) => {
     partnerLoading.value = true
     showPartnerModal.value = true
     const res = await getPartnerDetail(stepNo)
-    partnerData.value = res.data
+    partnerData.value = res.data.data
   } catch (e) {
     console.error('협력사 조회 실패', e)
   } finally {
@@ -238,7 +238,6 @@ onMounted(fetchProcessList)
   margin: 0 auto;
 }
 
-/* ── 헤더 ──────────────────────────── */
 .page-header {
   display: flex;
   align-items: flex-end;
@@ -279,7 +278,6 @@ onMounted(fetchProcessList)
   animation: pulse 1.5s infinite;
 }
 
-/* ── 로딩 ──────────────────────────── */
 .loading-area {
   display: flex;
   justify-content: center;
@@ -294,7 +292,6 @@ onMounted(fetchProcessList)
   animation: spin 0.8s linear infinite;
 }
 
-/* ── 카드 그리드 ───────────────────── */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -317,7 +314,6 @@ onMounted(fetchProcessList)
 .card-critical { border-left: 4px solid #dc2626; }
 .card-warning  { border-left: 4px solid #f59e0b; }
 
-/* 상단 */
 .card-top {
   display: flex;
   align-items: center;
@@ -351,7 +347,6 @@ onMounted(fetchProcessList)
   margin-top: 1px;
 }
 
-/* 설비 통계 */
 .card-stats { margin-bottom: 14px; }
 .stat-row {
   display: flex;
@@ -387,7 +382,6 @@ onMounted(fetchProcessList)
 .bar-warning  { background: #f59e0b; }
 .bar-critical { background: #dc2626; }
 
-/* 상태 뱃지 */
 .card-status {
   display: flex;
   align-items: center;
@@ -413,13 +407,11 @@ onMounted(fetchProcessList)
 .badge-warning  { background: #fffbeb; color: #d97706; }
 .badge-critical { background: #fef2f2; color: #dc2626; }
 
-/* 협력사 힌트 */
 .partner-hint {
   font-size: 11px;
   color: #bbb;
 }
 
-/* 알람 */
 .card-alerts {
   margin-top: 8px;
   padding-top: 8px;
@@ -439,7 +431,6 @@ onMounted(fetchProcessList)
   display: block;
 }
 
-/* ── 범례 ──────────────────────────── */
 .legend {
   display: flex;
   align-items: center;
@@ -465,7 +456,6 @@ onMounted(fetchProcessList)
   flex-shrink: 0;
 }
 
-/* ── 모달 ──────────────────────────── */
 .modal-backdrop {
   position: fixed;
   inset: 0;

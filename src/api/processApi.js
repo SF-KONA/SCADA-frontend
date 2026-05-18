@@ -1,19 +1,19 @@
-import api from './index.js'
+import http from './http.js'
 
-export const getProcessList = () => api.get('/processes')
+export const getProcessList = () => http.get('/processes')
 
-export const getPartnerDetail = (stepNo) => api.get(`/processes/${stepNo}/partner`)
+export const getPartnerDetail = (stepNo) => http.get(`/processes/${stepNo}/partner`)
 
-export const getEquipmentList = (stepNo) => api.get(`/processes/${stepNo}/equipments`)
+export const getEquipmentList = (stepNo) => http.get(`/processes/${stepNo}/equipments`)
 
 export const getEquipmentParameters = (equipmentId, period) =>
-  api.get(`/equipments/${equipmentId}/parameters`, { params: { period } })
+  http.get(`/equipments/${equipmentId}/parameters`, { params: { period } })
 
 export const getEquipmentAlarms = (equipmentId, status) =>
-  api.get(`/equipments/${equipmentId}/alarms`, { params: { status } })
+  http.get(`/equipments/${equipmentId}/alarms`, { params: { status } })
 
 export const getEquipmentEvents = (equipmentId, page, size) =>
-  api.get(`/equipments/${equipmentId}/events`, { params: { page, size } })
+  http.get(`/equipments/${equipmentId}/events`, { params: { page, size } })
 
 export const addEquipmentNote = (equipmentId, noteText) =>
-  api.post(`/equipments/${equipmentId}/notes`, { noteText })
+  http.post(`/equipments/${equipmentId}/notes`, { noteText })
