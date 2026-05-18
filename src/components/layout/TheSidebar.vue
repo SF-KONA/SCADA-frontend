@@ -41,7 +41,7 @@ const sidebar = useSidebarStore()
 
 const navItems = [
     { name: '메인 대시보드', path: '/dashboard', icon: 'fa-solid fa-gauge-high' },
-    { name: '공정', path: '/equipment', icon: 'fa-solid fa-industry' },
+    { name: '공정', path: '/process', icon: 'fa-solid fa-industry' },
     { name: '설비 제어', path: '/equipment-control', icon: 'fa-solid fa-sliders' },
     { name: 'AI리포트', path: '/report', icon: 'fa-solid fa-chart-line' },
     { name: '알림 센터', path: '/alarm', icon: 'fa-solid fa-bell' },

@@ -82,6 +82,18 @@ const routes = [
         component: () => import('@/views/equipment/EquipmentControlView.vue'),
         meta: { requiresAuth: true },
     },
+    {
+    path: '/process',
+    name: 'ProcessOverview',
+    component: () => import('@/views/process/ProcessOverview.vue'),
+    meta: { requiresAuth: true },
+    },
+    {
+    path: '/process/:stepNo/equipment',
+    name: 'EquipmentDetail',
+    component: () => import('@/views/process/EquipmentDetail.vue'),
+    meta: { requiresAuth: true },
+    },
 ]
 
 const router = createRouter({
